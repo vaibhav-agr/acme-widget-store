@@ -71,4 +71,18 @@ class BasketTest < Minitest::Test
     @basket.add('R01')
     assert_equal 98.27, @basket.total # (7.95 * 2) + (32.95 * 3) - 16.475 discount = 98.27
   end
+
+  def test_multiple_offers
+    offers = [
+      BuyOneGetSecondHalfPrice.new('R01'),
+      BuyOneGetSecondHalfPrice.new('G01')
+    ]
+    basket = Basket.new(@product_catalogue, @delivery_charge, offers)
+
+    2.times { basket.add('R01') }  # 32.95 * 2 - 16.475 = 49.425
+    2.times { basket.add('G01') }  # 24.95 * 2 - 12.475 = 37.425
+    basket.add('B01')              # 7.95
+
+    assert_equal 94.80, basket.total # 49.425 + 37.425 + 7.95 = 94.80
+  end
 end
